@@ -1,0 +1,92 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    font-family: 'Poppins', sans-serif;
+    color: #707070;
+}
+h1, h2, h3, h4, h5{
+	color: #1F1F1F;
+}
+h1{
+	font-size: 41px;
+}
+p{
+	font-size: 17px;
+	font-weight: 300;
+}
+hr{
+	width: 100px;
+	background-image: linear-gradient(90deg, #FF9C35, #FFD019);
+	height: 4px;
+	margin: 0 auto;
+	border-radius: 5px;
+}
+a{
+    text-decoration: none;
+    color: #1F1F1F;
+}
+.orange{
+	color: #FF9D00;
+	font-size: 18px;
+}
+/*header section*/
+.logo img{
+	width: 120px;
+}
+.menu ul li{
+	padding: 0px 10px;
+}
+
+/*slider section*/
+.slider{
+	background-image: url(../images/dots.png), url(../images/Best-Products.png);
+    background-repeat: no-repeat, no-repeat;
+	background-position: left bottom, center;
+	background-size: 150px, 60px;
+}
+.slide-text{
+	padding-left: 15px;
+}
+.custom-btn{
+	margin-top: 20px;
+	background-color: #1F1F1F;
+	color: #fff;
+	transition: 0.5s ease-in;
+}
+.custom-btn i{
+	font-size: 14px;
+	padding-left: 5px;
+}
+.custom-btn:focus{
+	box-shadow: none;
+}
+.custom-btn:hover{
+	background-image: linear-gradient(45deg, #FF9C35, #FFD019);
+}
+.custom-btn:hover i{
+	transform: translateX(3px);
+}
+.dots{
+	 bottom: -40px;
+}
+.dots li{
+	background-color: #CECECE;
+	width: 15px;
+	height: 5px;
+	border-radius: 10px;
+}
+.carousel-indicators .active{
+	background-image: linear-gradient(45deg, #FF9C35, #FFD019);
+	width: 20px;
+}
+
+.icon{
+	border-radius: 40px 5px 20px 5px;
+}
+.social-icons a{
+	padding: 10px;
+	font-size: 18px;
+}

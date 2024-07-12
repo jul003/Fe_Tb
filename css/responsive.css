@@ -1,0 +1,46 @@
+/* // Extra small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) {
+	h1{
+		font-size: 36px;
+	}
+	h5{
+		font-size: 18px;
+	}
+	p{
+		font-size: 16px;
+	}
+	.slider{
+		background-image: none;
+		text-align: center;
+		margin-top: 40px;
+	}
+	.marginForMobile{
+		margin-bottom: 25px;
+	}
+	.footer p, .social-icons{
+		text-align: center !important;
+		padding: 5px;
+	}
+}
+
+/* // Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+	h1{
+		font-size: 36px;
+	}
+	h5{
+		font-size: 18px;
+	}
+	p{
+		font-size: 16px;
+	}
+	.slider{
+		background-image: none;
+	}
+	.card{
+		padding: 0px !important;
+	}
+	.card img{
+		padding: 0px !important;
+	}
+}
