@@ -1,0 +1,1 @@
+export let urlAPI = "https://tb-2024-2df3fc45e2ad.herokuapp.com/gadget"
