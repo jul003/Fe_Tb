@@ -1,20 +1,17 @@
 function toggleSections(section) {
     
+    const dashboardSection = document.getElementById('dashboardSection');
     const profileSection = document.getElementById('profileSection');
-    const gadgetSection = document.getElementById('gadgetSection');
-    
-    if (section === 'profile') {
-        
-        profileSection.style.display = 'block';
-        gadgetSection.style.display = 'none';
-        
-    }
 
-    else if (section === 'gadget') {
-        gadgetSection.style.display = 'block';
+    
+    if (section === 'dashboard') {
+        dashboardSection.style.display = 'block';
         profileSection.style.display = 'none';
-
     }
-    
+
+    else if (section === 'profile') {
+        dashboardSection.style.display = 'none';
+        profileSection.style.display = 'block';
+    }
 
 }
