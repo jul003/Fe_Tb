@@ -15,6 +15,13 @@ function pushData() {
         return;
     }
 
+
+harga = parseFloat(harga);
+if (isNaN(harga)) {
+    alert('Harga harus berupa angka.');
+    return;
+}
+
     
     let data = {
         nama: nama,

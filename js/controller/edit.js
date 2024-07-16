@@ -1,15 +1,9 @@
-export function fillGame(results) {  
+export function isiDataGadget(results) {  
     const inputMapping = [
-      { id: 'gamename', path: 'name' },
-      { id: 'devname', path: 'dev_name.name' },
-      { id: 'genre', path: 'genre' },
-      { id: 'rating', path: 'rating' },
-      { id: 'logo', path: 'game_logo' },
-      { id: 'banner', path: 'game_banner' },
-      { id: 'preview', path: 'preview' },
-      { id: 'gamelinks', path: 'link_games' },
-      { id: 'aboutgame', path: 'desc' },
-      { id: 'aboutdevs', path: 'dev_name.bio' },
+      { id: 'nama', path: 'nama' },
+      { id: 'merk', path: 'merk' },
+      { id: 'harga', path: 'harga' },
+      { id: 'deskripsi', path: 'deskripsi' },
     ];
   
     inputMapping.forEach(({ id, path, index, property }) => {
