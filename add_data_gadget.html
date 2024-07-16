@@ -7,62 +7,62 @@
 </head>
 <body>
 
-    <nav>
-        <a href="data.html" class="navbar-link">Kembali Ke Halaman Utama</a>
-    </nav>
+  <nav>
+    <a href="data.html" class="navbar-link">Kembali Ke Halaman Utama</a>
+</nav>
 
-    <div class="formbold-main-wrapper">
-      <div class="formbold-form-wrapper">
-        <form >
-            <div class="formbold-input-flex">
-              <div>
-                  <input
-                  type="text"
-                  id="nama"
-                  placeholder="Jane"
-                  class="formbold-form-input"
-                  />
-                  <label for="firstname" class="formbold-form-label"> Nama </label>
-              </div>
-              <div>
-                  <input
-                  type="text"
-                  id="merk"
-                  placeholder="Cooper"
-                  class="formbold-form-input"
-                  />
-                  <label for="lastname" class="formbold-form-label"> Merk </label>
-              </div>
-            </div>
-    
-            <div class="formbold-input-flex">
-              <div>
-                  <input
-                  type="text"
-                  id="harga"
-                  placeholder="jhon@mail.com"
-                  class="formbold-form-input"
-                  />
-                  <label for="email" class="formbold-form-label"> Harga </label>
-              </div>
-            </div>
-    
-            <div class="formbold-textarea">
-                <textarea
-                    rows="6"
-                    id="deskripsi"
-                    placeholder="Write your message..."
-                    class="formbold-form-input"
-                ></textarea>
-                <label for="message" class="formbold-form-label"> Deskripsi </label>
-            </div>
-    
-            <button id="button" class="formbold-btn">
-                Save data
-            </button>
-        </form>
-      </div>
-    </div>
+<div class="formbold-main-wrapper">
+  <div class="formbold-form-wrapper">
+    <form id="dataForm">
+        <div class="formbold-input-flex">
+          <div>
+              <input
+              type="text"
+              id="nama"
+              placeholder="Nama Gadget"
+              class="formbold-form-input"
+              />
+              <label for="nama" class="formbold-form-label"> Nama </label>
+          </div>
+          <div>
+              <input
+              type="text"
+              id="merk"
+              placeholder="Merk Gadget"
+              class="formbold-form-input"
+              />
+              <label for="merk" class="formbold-form-label"> Merk </label>
+          </div>
+        </div>
+
+        <div class="formbold-input-flex">
+          <div>
+              <input
+              type="text"
+              id="harga"
+              placeholder="Harga Gadget"
+              class="formbold-form-input"
+              />
+              <label for="harga" class="formbold-form-label"> Harga </label>
+          </div>
+        </div>
+
+        <div class="formbold-textarea">
+            <textarea
+                rows="6"
+                id="deskripsi"
+                placeholder="Deskripsi Gadget"
+                class="formbold-form-input"
+            ></textarea>
+            <label for="deskripsi" class="formbold-form-label"> Deskripsi </label>
+        </div>
+
+        <button type="button" id="button" class="formbold-btn">
+            Save data
+        </button>
+    </form>
+  </div>
+</div>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
       * {
@@ -183,5 +183,6 @@
     
     </style>
 <script type="module" src="js/controller/post.js"></script>
+
 </body>
 </html>

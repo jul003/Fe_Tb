@@ -14,6 +14,8 @@ function isiDataGadget(value) {
             .replace('#MerkGadget#', value.merk)
             .replace('#HargaGadget#', value.harga)
             .replace('#Deskripsi#', value.deskripsi)
+            .replace("#IDEDIT", value._id)
+            .replace("#IDHAPUS", value._id)
     addInner("tabelGadget", content)
 }
 
