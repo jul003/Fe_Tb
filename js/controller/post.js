@@ -1,6 +1,6 @@
 import { postData } from "https://bukulapak.github.io/api/process.js";
 import { onClick, getValue } from "https://bukulapak.github.io/element/process.js";
-import { urlPOST, } from "../config/url_post.js";
+import { urlPOST, AmbilResponse} from "../config/url_post.js";
 
 
 function pushData(){
@@ -10,9 +10,7 @@ function pushData(){
         "harga": getValue("harga"),
         "deskripsi": getValue("deskripsi")
     }
-    postData(urlPOST, data);
-    cons.result = console.log()
-    alert(result)
+    postData(urlPOST, data, AmbilResponse);
 
 }
 
