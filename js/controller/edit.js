@@ -1,10 +1,13 @@
 export function isiDataGadget(results) {  
-    const inputMapping = [
-      { id: 'nama', path: 'nama' },
-      { id: 'merk', path: 'merk' },
-      { id: 'harga', path: 'harga' },
-      { id: 'deskripsi', path: 'deskripsi' },
-    ];
+  const inputMapping = [
+    { id: 'nama', path: 'nama' },
+    { id: 'merk', path: 'merk' },
+    { id: 'harga', path: 'harga' },
+    { id: 'spesifikasiProsesor', path: 'spesifikasi.prosesor' },
+    { id: 'spesifikasiRAM', path: 'spesifikasi.ram' },
+    { id: 'spesifikasiStorage', path: 'spesifikasi.storage' },
+    { id: 'deskripsi', path: 'deskripsi' }
+];
   
     inputMapping.forEach(({ id, path, index, property }) => {
       const inputElement = document.getElementById(id);
@@ -22,4 +25,8 @@ function getNestedValue(obj, path, index, property) {
     }
   
     return value;
+}
+
+function formatRupiah(value) {
+  return `Rp ${parseFloat(value).toLocaleString('id-ID')}`;
 }
