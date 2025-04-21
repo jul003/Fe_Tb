@@ -1,21 +1,82 @@
-// Data pengguna
+// Daftar data pengguna
 var admin = [
     {
         id: "1",
         name: "qinthar",
-        email: "qintharhahay@gmail.com",
-        passwordHash: CryptoJS.SHA256("garut").toString()
+        email: "qinthar@gmail.com",
+        passwordHash: CryptoJS.SHA256("garut").toString(),
+        role: "restricted" // Hanya bisa akses data.html
     },
     {
         id: "2",
         name: "Dzulkifli",
         email: "dzulkiflifaiz11@gmail.com",
-        passwordHash: CryptoJS.SHA256("ganteng").toString()
+        passwordHash: CryptoJS.SHA256("ganteng").toString(),
+        role: "unlimited" // Bisa akses semua halaman
     }
 ];
 
-// Variabel untuk menyimpan percobaan login
-var loginAttempts = {}; // Format: { email: { count: 0, lastAttempt: timestamp } }
+// Fungsi untuk mendapatkan URL redirect dari query parameter
+function getRedirectUrl(userRole) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUrl = urlParams.get("redirect");
+
+    // Jika tidak ada query parameter redirect, return URL default berdasarkan role
+    if (!redirectUrl) {
+        return userRole === "restricted" ? "data.html" : "data.html"; // Qinthar hanya ke data.html
+    }
+
+    // Validasi URL redirect berdasarkan role
+    const allowedRedirectUrls = userRole === "restricted" ? ["data.html"] : ["data.html", "edit_data.html"];
+
+    return allowedRedirectUrls.includes(redirectUrl) ? redirectUrl : "data.html";
+}
+
+// Fungsi untuk redirect dengan validasi role
+function safeRedirect(targetUrl) {
+    const userRole = sessionStorage.getItem("userRole");
+
+    // Debugging
+    console.log(`safeRedirect() - User Role: ${userRole}, Target URL: ${targetUrl}`);
+
+    // Jika user role "restricted", hanya boleh akses data.html
+    if (userRole === "restricted" && targetUrl !== "data.html") {
+        alert("Akses ditolak. Anda hanya dapat mengakses halaman data.");
+        window.location.href = "data.html";
+    } else {
+        window.location.href = targetUrl;
+    }
+}
+
+// Fungsi untuk validasi sesi pengguna
+function validateSession() {
+    const isAuthenticated = sessionStorage.getItem("isAuthenticated");
+    const sessionStartTime = sessionStorage.getItem("sessionStartTime");
+    const userRole = sessionStorage.getItem("userRole");
+
+    // Periksa apakah sesi valid
+    if (!isAuthenticated || !sessionStartTime) {
+        alert("Sesi Anda telah kedaluwarsa, silakan login kembali.");
+        sessionStorage.clear();
+        window.location.href = "index.html";
+        return;
+    }
+
+    // Periksa waktu kedaluwarsa (1 menit = 60000 ms)
+    const sessionDuration = Date.now() - parseInt(sessionStartTime);
+    if (sessionDuration > 60000) { // Jika lebih dari 1 menit
+        alert("Sesi Anda telah berakhir karena inaktivitas.");
+        sessionStorage.clear();
+        window.location.href = "index.html";
+        return;
+    }
+
+    // Blokir akses ke edit_data.html jika user "restricted"
+    if (userRole === "restricted" && window.location.pathname.includes("edit_data.html")) {
+        alert("Akses ditolak. Anda hanya dapat mengakses halaman data.");
+        window.location.href = "data.html";
+    }
+}
 
 // Fungsi untuk login
 function getLogin() {
@@ -28,86 +89,33 @@ function getLogin() {
         return;
     }
 
-    // Validasi format email menggunakan regex
+    // Validasi format email
     var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         alert("Format email tidak valid!");
         return;
     }
 
-    // Inisialisasi rate limiting
-    const MAX_ATTEMPTS = 3; // Maksimal percobaan
-    const LOCK_TIME = 5 * 60 * 1000; // Waktu blokir: 5 menit
-
-    // Cek apakah ada data untuk email ini
-    if (!loginAttempts[email]) {
-        loginAttempts[email] = { count: 0, lastAttempt: Date.now() };
-    }
-
-    const attemptsData = loginAttempts[email];
-    const timeSinceLastAttempt = Date.now() - attemptsData.lastAttempt;
-
-    // Jika dalam waktu blokir
-    if (attemptsData.count >= MAX_ATTEMPTS && timeSinceLastAttempt < LOCK_TIME) {
-        alert("Anda telah mencapai batas percobaan login. Silakan coba lagi nanti.");
-        window.location.href = "index.html"; // Redirect ke halaman login
-        return;
-    }
-
-    // Reset percobaan jika sudah melewati waktu blokir
-    if (timeSinceLastAttempt >= LOCK_TIME) {
-        attemptsData.count = 0;
-    }
-
-    // Hash password input untuk pencocokan
+    // Hash password input
     var passwordHash = CryptoJS.SHA256(password).toString();
 
     // Cek keberadaan user
     var user = admin.find((user) => user.email === email && user.passwordHash === passwordHash);
 
     if (user) {
-        // Jika login berhasil, reset percobaan dan simpan sesi
-        attemptsData.count = 0;
+        // Simpan sesi
         sessionStorage.setItem("isAuthenticated", true);
-        sessionStorage.setItem("userRole", "admin");
+        sessionStorage.setItem("userRole", user.role);
         sessionStorage.setItem("userId", user.id);
         sessionStorage.setItem("sessionStartTime", Date.now());
 
         alert(`Selamat datang, ${user.name}!`);
-        window.location.href = "data.html"; // Redirect ke halaman dashboard
+
+        // Redirect ke halaman yang sesuai berdasarkan role
+        const redirectUrl = getRedirectUrl(user.role);
+        safeRedirect(redirectUrl);
     } else {
-        // Jika login gagal, tambah jumlah percobaan
-        attemptsData.count++;
-        attemptsData.lastAttempt = Date.now();
-
-        if (attemptsData.count >= MAX_ATTEMPTS) {
-            alert("Anda telah mencapai batas percobaan login. Silakan coba lagi nanti.");
-            window.location.href = "index.html"; // Redirect ke halaman login
-        } else {
-            alert("Email atau password salah.");
-        }
-    }
-}
-
-// Fungsi untuk validasi sesi
-function validateSession() {
-    const isAuthenticated = sessionStorage.getItem("isAuthenticated");
-    const sessionStartTime = sessionStorage.getItem("sessionStartTime");
-
-    // Periksa apakah sesi valid
-    if (!isAuthenticated || !sessionStartTime) {
-        alert("Sesi Anda telah kedaluwarsa, silakan login kembali.");
-        sessionStorage.clear();
-        window.location.href = "index.html";
-        return;
-    }
-
-    // Periksa waktu kedaluwarsa (30 menit = 1800000 ms)
-    const sessionDuration = Date.now() - sessionStartTime;
-    if (sessionDuration > 1800000) {
-        alert("Sesi Anda telah berakhir karena inaktivitas.");
-        sessionStorage.clear();
-        window.location.href = "index.html";
+        alert("Email atau password salah.");
     }
 }
 

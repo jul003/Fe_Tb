@@ -2,8 +2,44 @@ import { postData } from "https://bukulapak.github.io/api/process.js";
 import { onClick, getValue } from "https://bukulapak.github.io/element/process.js";
 import { urlPOST, AmbilResponse } from "../config/url_post.js";
 
+// Fetch CSRF token
+async function getCsrfToken() {
+    try {
+        const response = await fetch('http://127.0.0.1:8080/csrf-token', {  
+            method: 'GET',
+            credentials: 'include'  // Mengizinkan pengiriman cookie
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch CSRF token');
+        }
+
+        const data = await response.json();
+        return data.csrf_token;  // Mengembalikan CSRF token
+    } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+        alert('Gagal mengambil token CSRF');
+        return null;
+    }
+}
+
+// Function to sanitize input
+function sanitizeInput(input) {
+    if (typeof input === 'string') {
+        return input.trim(); // Menghapus spasi ekstra di awal dan akhir string
+    }
+    return input; // Mengembalikan input apa adanya jika bukan string
+}
+
+// Function to remove non-numeric characters from currency format (e.g., 'Rp 1.000' -> '1000')
+function stripRupiahFormatting(input) {
+    return input.replace(/[^\d]/g, ''); // Hapus semua karakter selain angka
+}
+
+// Function to push data to the backend
 async function pushData() {
     try {
+        // Get the values from the form fields
         const nama = sanitizeInput(getValue("nama"));
         const merk = sanitizeInput(getValue("merk"));
         let harga = sanitizeInput(getValue("harga"));
@@ -12,13 +48,13 @@ async function pushData() {
         let spesifikasiStorage = sanitizeInput(getValue("spesifikasiStorage"));
         const deskripsi = sanitizeInput(getValue("deskripsi"));
 
-        // Validasi input kosong
+        // Validation for empty inputs
         if (!nama || !merk || !harga || !deskripsi) {
             alert('Silakan isi semua kolom.');
             return;
         }
 
-        // Validasi panjang input
+        // Length validation for inputs
         if (nama.length > 50) {
             alert('Nama tidak boleh lebih dari 50 karakter.');
             return;
@@ -34,7 +70,7 @@ async function pushData() {
             return;
         }
 
-        // Validasi pola input (regex)
+        // Pattern validation for valid name and merk (letters, numbers, and spaces only)
         const validNamePattern = /^[a-zA-Z0-9\s]+$/;
         if (!validNamePattern.test(nama)) {
             alert('Nama hanya boleh mengandung huruf, angka, dan spasi.');
@@ -46,11 +82,12 @@ async function pushData() {
             return;
         }
 
-        harga = parseFloat(stripRupiahFormatting(harga));
+        // Convert harga, RAM, and storage to their appropriate types
+        harga = parseFloat(stripRupiahFormatting(harga)); // Strips non-numeric characters from 'harga'
         spesifikasiRAM = parseInt(spesifikasiRAM);
         spesifikasiStorage = parseInt(spesifikasiStorage);
 
-        // Validasi angka dan rentang
+        // Numeric validation for harga, RAM, and storage
         if (isNaN(harga) || harga < 1000 || harga > 100000000) {
             alert('Harga harus berupa angka dan berada di antara Rp 1.000 dan Rp 100.000.000.');
             return;
@@ -66,6 +103,7 @@ async function pushData() {
             return;
         }
 
+        // Prepare the data object
         const data = {
             nama: nama,
             merk: merk,
@@ -78,10 +116,27 @@ async function pushData() {
             deskripsi: deskripsi
         };
 
-        await postData(urlPOST, data, AmbilResponse);
+        // Fetch CSRF token
+        const csrfToken = await getCsrfToken();
+        if (!csrfToken) {
+            console.error('Token CSRF tidak ditemukan');
+            return;
+        }
+
+        console.log("CSRF Token yang akan dikirim:", csrfToken);
+
+        // Add CSRF token to the request headers
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-Csrf-Token': csrfToken  // Add CSRF token in the header
+        };
+
+        // Send data using the postData function
+        await postData(urlPOST, data, AmbilResponse, headers);  // Send data with CSRF header
 
         console.log('Data berhasil dikirim:', data);
 
+        // Reset the form after successful submission
         document.getElementById('dataForm').reset();
     } catch (error) {
         console.error('Terjadi kesalahan saat mengirim data:', error);
@@ -89,35 +144,5 @@ async function pushData() {
     }
 }
 
-onClick("button", pushData);
-
-document.getElementById('harga').addEventListener('input', function (e) {
-    this.value = formatRupiah(this.value);
-});
-
-// Fungsi untuk memformat harga dalam format rupiah
-function formatRupiah(value) {
-    let numberString = value.replace(/[^,\d]/g, '').toString();
-    let split = numberString.split(',');
-    let sisa = split[0].length % 3;
-    let rupiah = split[0].substr(0, sisa);
-    let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-
-    if (ribuan) {
-        let separator = sisa ? '.' : '';
-        rupiah += separator + ribuan.join('.');
-    }
-
-    rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
-    return `Rp ${rupiah}`;
-}
-
-// Fungsi untuk menghapus format rupiah
-function stripRupiahFormatting(value) {
-    return value.replace(/[^0-9,-]+/g, '').replace(',', '.');
-}
-
-// Fungsi untuk sanitasi input
-function sanitizeInput(value) {
-    return value.replace(/<|>|"|'/g, '');
-}
+// Make sure you call pushData on the appropriate event, e.g., form submission or button click
+document.getElementById('submitButton').addEventListener('click', pushData);

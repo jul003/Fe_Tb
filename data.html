@@ -10,36 +10,33 @@
   <title>Data Gadget</title>
   <script>
     // Middleware to check authentication
-    function checkAuthentication() {
-    const isAuthenticated = sessionStorage.getItem("isAuthenticated");
-    const userRole = sessionStorage.getItem("userRole");
+    function checkAuthenticationAndSession() {
+            const isAuthenticated = sessionStorage.getItem("isAuthenticated");
+            const userRole = sessionStorage.getItem("userRole");
+            const sessionStartTime = sessionStorage.getItem("sessionStartTime");
 
-    if (!isAuthenticated) {
-        alert("Anda tidak memiliki akses ke halaman ini. Silakan login terlebih dahulu.");
-        window.location.href = "login.html";
-        return;
-    }
+            // Cek apakah pengguna sudah login dan sesi valid
+            if (!isAuthenticated || !sessionStartTime) {
+                alert("Sesi Anda telah kedaluwarsa atau Anda belum login.");
+                sessionStorage.clear();
+                window.location.href = "login.html"; // Redirect ke halaman login
+                return;
+            }
 
-    if (userRole !== "admin") {
-        alert("Anda tidak memiliki izin untuk mengakses halaman ini.");
-        window.location.href = "login.html";
-    }
-}
+            // Validasi durasi sesi (cek apakah lebih dari 1 menit)
+            const sessionDuration = Date.now() - parseInt(sessionStartTime);
+            if (sessionDuration > 30000) { 
+                alert("Sesi Anda telah berakhir karena inaktivitas.");
+                sessionStorage.clear();
+                window.location.href = "index.html"; // Redirect ke halaman login
+                return;
+            }
+        }
 
-window.onload = function() {
-            validateSession();
+        // Panggil fungsi untuk validasi sesi saat halaman dimuat
+        window.onload = function () {
+            checkAuthenticationAndSession();
         };
-
-
-    // Role-based access control
-    function hasPermission(role) {
-    const userRole = sessionStorage.getItem("userRole");
-    return userRole === role;
-}
-
-
-    // Panggil middleware pada load halaman
-    window.onload = checkAuthentication;
   </script>
 </head>
 
@@ -98,98 +95,112 @@ window.onload = function() {
             Logout
           </button>
         </div>
-      </li>
-    </ul>
-  </div>
-</aside>
+        </li>
+        </ul>
+      </div>
+    </aside>
 
-<div id="dashboardSection" class="relative overflow-x-auto shadow-md sm:rounded-lg h-screen">
-  <div class="pt-1 xl:ml-80">
-    <div class="mt-12">
-      <div class="md:px-6 py-8 w-full">
-        <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
-          <div class="mx-4 rounded-xl overflow-hidden flex items-center justify-center" style="height: 800px;">
-            <video class="w-full h-full pointer-events-none" controls autoplay loop muted style="width: 100%; height: 100%;">
-              <source src="assets/Purple Black Abstract Professional Technology Business Channel Opening Youtube Intro.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
+    <div id="dashboardSection" class="relative overflow-x-auto shadow-md sm:rounded-lg h-screen">
+      <div class="pt-1 xl:ml-80">
+        <div class="mt-12">
+          <div class="md:px-6 py-8 w-full">
+            <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
+              <div class="mx-4 rounded-xl overflow-hidden flex items-center justify-center" style="height: 800px;">
+                <video class="w-full h-full pointer-events-none" controls autoplay loop muted
+                  style="width: 100%; height: 100%;">
+                  <source
+                    src="assets/Purple Black Abstract Professional Technology Business Channel Opening Youtube Intro.mp4"
+                    type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
 
-<div id="profileSection" class="relative overflow-x-auto shadow-md sm:rounded-lg hidden">
-  <div class="pt-1 xl:ml-80">
-    <div class="md:px-6 py-8 w-full">
-      <p class="font-sans text-2xl font-bold">Data Gadget</p>
-      <br>
-      <div class="shadow overflow-x-scroll overflow-y-scroll rounded border-b border-gray-200">
-        <table class="table-auto w-full bg-white">
-          <thead class="bg-gray-800 text-white">
-            <tr>
-              <th class="w-1/6 text-left py-3 px-4 uppercase font-semibold text-sm">ID Gadget</th>
-              <th class="w-1/6 text-left py-3 px-4 uppercase font-semibold text-sm">Nama</th>
-              <th class="w-1/6 text-left py-3 px-4 uppercase font-semibold text-sm">Merk</th>
-              <th class="w-1/6 text-left py-3 px-4 uppercase font-semibold text-sm">Harga</th>
-              <th class="w-1/6 text-left py-3 px-8 uppercase font-semibold text-sm">Spesifikasi</th>
-              <th class="w-1/6 text-left py-3 px-8 uppercase font-semibold text-sm">Deskripsi</th>
-              <th class="w-1/6 text-center py-3 px-8">Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="tabelGadget" class="text-gray-700">
-            <tr>
-              <td>#IDGadget#</td>
-              <td>#NamaGadget#</td>
-              <td>#MerkGadget#</td>
-              <td>#HargaGadget#</td>
-              <td>#Spesifikasi#</td>
-              <td>#Deskripsi#</td>
-              <td class="w-1/6 text-center py-3 px-8">
-                <div class="flex justify-center space-x-4">
-                  <a type="button" href="edit.html?presensiId=#IDEDIT#" class="text-blue-500 hover:text-blue-700" onclick="if (!hasPermission('admin')) { alert('Anda tidak memiliki izin untuk mengedit.'); return false; }">Edit</a>
-                  <button type="button" id="del_button" onclick="if (hasPermission('admin')) { deleteData('#IDHAPUS#'); } else { alert('Anda tidak memiliki izin untuk menghapus.'); }" class="text-red-500 hover:text-red-700">Delete</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <div id="profileSection" class="relative overflow-x-auto shadow-md sm:rounded-lg hidden">
+      <div class="pt-1 xl:ml-80">
+        <div class="md:px-6 py-8 w-full">
+          <p class="font-sans text-2xl font-bold">Data Gadget</p>
+          <br>
+          <div class="shadow overflow-x-scroll overflow-y-scroll rounded border-b border-gray-200">
+            <table class="table-auto w-full bg-white">
+              <thead class="bg-gray-800 text-white">
+                <tr>
+                  <th class="w-1/6 text-left py-3 px-4 uppercase font-semibold text-sm">ID Gadget</th>
+                  <th class="w-1/6 text-left py-3 px-4 uppercase font-semibold text-sm">Nama</th>
+                  <th class="w-1/6 text-left py-3 px-4 uppercase font-semibold text-sm">Merk</th>
+                  <th class="w-1/6 text-left py-3 px-4 uppercase font-semibold text-sm">Harga</th>
+                  <th class="w-1/6 text-left py-3 px-8 uppercase font-semibold text-sm">Spesifikasi</th>
+                  <th class="w-1/6 text-left py-3 px-8 uppercase font-semibold text-sm">Deskripsi</th>
+                  <th class="w-1/6 text-center py-3 px-8">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tabelGadget" class="text-gray-700">
+                <tr>
+                  <td>#IDGadget#</td>
+                  <td>#NamaGadget#</td>
+                  <td>#MerkGadget#</td>
+                  <td>#HargaGadget#</td>
+                  <td>#Spesifikasi#</td>
+                  <td>#Deskripsi#</td>
+                  <td class="w-1/6 text-center py-3 px-8">
+                    <div class="flex justify-center space-x-4">
+                      <a type="button" href="edit.html?presensiId=#IDEDIT#" class="text-blue-500 hover:text-blue-700"
+                        onclick="if (!hasPermission('admin')) { alert('Anda tidak memiliki izin untuk mengedit.'); return false; }">Edit</a>
+                      <button type="button" id="del_button"
+                        onclick="if (hasPermission('admin')) { deleteData('#IDHAPUS#'); } else { alert('Anda tidak memiliki izin untuk menghapus.'); }"
+                        class="text-red-500 hover:text-red-700">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-  <div class="pt-1 xl:ml-80">
-    <footer class="flex flex-row flex-wrap items-center justify-center w-full py-6 text-center border-t gap-y-6 gap-x-12 border-blue-gray-50 md:justify-between">
-      <p class="block font-sans text-base antialiased font-normal leading-relaxed text-blue-gray-900">
-        © 2024 Dzul 
-      </p>
-      <ul class="flex justify-center items-center gap-y-1 gap-x-6">
-        <li>
-          <a href="#" class="block font-sans text-base antialiased font-normal leading-relaxed transition-colors text-blue-gray-900 hover:text-blue-500 focus:text-blue-500">
-            Kontak
-          </a>
-        </li>
-        <li>
-          <a href="#" class="block font-sans text-base antialiased font-normal leading-relaxed transition-colors text-blue-gray-900 hover:text-blue-500 focus:text-blue-500">
-            Keterangan
-          </a>
-        </li>
-        <li>
-          <a href="#" class="block font-sans text-base antialiased font-normal leading-relaxed transition-colors text-blue-gray-900 hover:text-blue-500 focus:text-blue-500">
-            Alamat
-          </a>
-        </li>
-        <li>
-          <a href="#" class="block font-sans text-base antialiased font-normal leading-relaxed transition-colors text-blue-gray-900 hover:text-blue-500 focus:text-blue-500">
-            Support
-        </li>
-      </ul>
-    </footer>
-  </div>
-  <script src="js/transisi.js"></script>
-  <script src="js/controller/delete.js"></script>
+    <div class="pt-1 xl:ml-80">
+      <footer
+        class="flex flex-row flex-wrap items-center justify-center w-full py-6 text-center border-t gap-y-6 gap-x-12 border-blue-gray-50 md:justify-between">
+        <p class="block font-sans text-base antialiased font-normal leading-relaxed text-blue-gray-900">
+          © 2024 Dzul
+        </p>
+        <ul class="flex justify-center items-center gap-y-1 gap-x-6">
+          <li>
+            <a href="#"
+              class="block font-sans text-base antialiased font-normal leading-relaxed transition-colors text-blue-gray-900 hover:text-blue-500 focus:text-blue-500">
+              Kontak
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="block font-sans text-base antialiased font-normal leading-relaxed transition-colors text-blue-gray-900 hover:text-blue-500 focus:text-blue-500">
+              Keterangan
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="block font-sans text-base antialiased font-normal leading-relaxed transition-colors text-blue-gray-900 hover:text-blue-500 focus:text-blue-500">
+              Alamat
+            </a>
+          </li>
+          <li>
+            <a href="#"
+              class="block font-sans text-base antialiased font-normal leading-relaxed transition-colors text-blue-gray-900 hover:text-blue-500 focus:text-blue-500">
+              Support
+          </li>
+        </ul>
+      </footer>
+    </div>
+    <script>
+      
+    </script>
+    <script src="js/transisi.js"></script>
+    <script src="js/controller/delete.js"></script>
 </body>
 
 </html>
